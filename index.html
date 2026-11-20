@@ -21,4 +21,16 @@ footer{font-size:.75rem;color:#777;text-align:center;margin:24px 0}
 <div class="schritt"><div class="nr">2</div><div><p><b>Oberfläche öffnen:</b> danach QR-Code <b>2</b> erneut scannen oder diese Seite neu laden.</p></div></div>
 <p class="klein">Öffnet sich die Oberfläche trotz Verbindung nicht, bitte die Adresse <b>10.1.1.1</b> eingeben.</p>
 <footer>Automation-One GmbH · A1 Wärmemengenzähler</footer>
-</main></body></html>
+</main>
+<script>
+// Ist das Handy inzwischen im Gateway-WLAN, beantwortet das Gateway diese Adresse selbst: dann an jedem Zwischenspeicher
+// vorbei neu laden, damit die Oberflaeche des Gateways erscheint (GitHub erlaubt Browsern 10 min Zwischenspeicherung).
+function gatewayPruefen(){
+ fetch("/api/status?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(s=>{
+  if(s&&s.messung){location.replace("/?gateway="+Date.now());}
+ }).catch(()=>{});
+}
+gatewayPruefen();setInterval(gatewayPruefen,3000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)gatewayPruefen();});
+</script>
+</body></html>
